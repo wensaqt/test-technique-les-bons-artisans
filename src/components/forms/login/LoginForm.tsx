@@ -3,6 +3,7 @@ import { loginUser } from "@/app/api/auth/auth.req";
 import { LoginData } from "@/common/interfaces/login.interface";
 import CustomInput from "@/components/input/CustomInput";
 import { setUser } from "@/store/auth-slice";
+import { dispatch } from "@/store/store";
 import { Box, Button, FormControl, Stack } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -23,7 +24,7 @@ const LoginForm = () => {
   const onSubmit: SubmitHandler<LoginData> = async (data) => {
     const response = await loginUser(data);
     if (response.ok) {
-      setUser(response.user);
+      dispatch(setUser(response.user));
       router.push("/");
     } else {
       console.error("Login failed");

@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { ProductType } from "@enums/product.enums";
 import ProductForm from "../forms/products/ProductForm";
 import { deleteOneProduct } from "@/services/products.service";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 interface ProductListProps {
   products: Product[];
@@ -14,6 +16,7 @@ interface ProductListProps {
 
 const ProductList: React.FC<ProductListProps> = ({ products }) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
     console.log("selected product:", selectedProduct);
@@ -32,6 +35,7 @@ const ProductList: React.FC<ProductListProps> = ({ products }) => {
 
   const handleDelete = async () => {
     await deleteOneProduct(selectedProduct!._id!);
+    setSelectedProduct(null);
   };
 
   const handleClose = () => {
@@ -48,17 +52,26 @@ const ProductList: React.FC<ProductListProps> = ({ products }) => {
 
   return (
     <Box>
-      <Typography variant="h4" component="h1">
-        Product List
-      </Typography>
+      <Box className="border-b border-divider mb-10 border-white flex justify-between ">
+        <Typography variant="h4" component="h1">
+          Product List
+        </Typography>
+        <Typography>authed as : {user?.email}</Typography>
+      </Box>
       <Box className="flex gap-4 items-center">
-        {products.map((product) => (
-          <ProductCard
-            key={product._id}
-            product={product}
-            onClick={() => handleCardClick(product)}
-          />
-        ))}
+        {products.length === 0 ? (
+          <Typography fontWeight="light" component="p">
+            There is currently no product. Add your first one :
+          </Typography>
+        ) : (
+          products.map((product) => (
+            <ProductCard
+              key={product._id}
+              product={product}
+              onClick={() => handleCardClick(product)}
+            />
+          ))
+        )}
         {selectedProduct && (
           <ProductForm
             product={selectedProduct}
